@@ -1,0 +1,6 @@
+@Banq_HostAddress = http://localhost:5022
+
+GET {{Banq_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
