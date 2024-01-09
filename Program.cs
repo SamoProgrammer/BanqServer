@@ -59,6 +59,13 @@ builder.Services.AddAuthentication(options =>
 });
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    await AdminsDbInitializer.Initialize(userManager, roleManager);
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -73,5 +80,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();
-
+app.UseCors();
 app.Run();

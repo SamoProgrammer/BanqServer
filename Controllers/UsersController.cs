@@ -1,5 +1,6 @@
 ﻿using Banq.Authentication;
 using Banq.Authentication.Models;
+using Banq.Database.Entities;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,14 +13,14 @@ namespace Banq.Controllers
     [EnableCors("MyPolicy")]
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration _configuration;
 
 
-        public UserController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
@@ -69,17 +70,20 @@ namespace Banq.Controllers
 
         [HttpPost]
         [Route("Register-Manager")]
-        public async Task<IActionResult> RegisterManager([FromBody] RegisterModel model)
+        public async Task<IActionResult> RegisterManager([FromBody] ManagerRegisterModel model)
         {
             var userExists = await userManager.FindByNameAsync(model.Username);
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
-            ApplicationUser user = new ApplicationUser()
+            Manager user = new Manager()
             {
+                Biography = model.Biography,
                 PhoneNumber = model.PhoneNumber,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Username
+                Name = model.Name,
+                Family = model.Family,
+                UserName = model.Username,
+                PersonnelCode = model.PersonnelCode
             };
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
@@ -97,21 +101,26 @@ namespace Banq.Controllers
             }
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
-        
+
         [HttpPost]
         [Route("Register-Teacher")]
-        public async Task<IActionResult> RegisterTeacher([FromBody] RegisterModel model)
+        public async Task<IActionResult> RegisterTeacher([FromBody] TeacherRegisterModel model)
         {
             var userExists = await userManager.FindByNameAsync(model.Username);
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
-            ApplicationUser user = new ApplicationUser()
+            Teacher user = new Teacher()
             {
+                Biography = model.Biography,
                 PhoneNumber = model.PhoneNumber,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Username
+                Name = model.Name,
+                Family = model.Family,
+                UserName = model.Username,
+                PersonnelCode = model.PersonnelCode,
+                WantsToCheckOtherQuestions = model.WantsToCheckOtherQuestions
             };
+            
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });

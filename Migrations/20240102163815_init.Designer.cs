@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Banq.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240101182804_init")]
+    [Migration("20240102163815_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -84,61 +84,6 @@ namespace Banq.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("Banq.Database.Entities.Admin", b =>
-                {
-                    b.Property<ulong>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<Guid>("ConcurrencyStamp")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Family")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<Guid?>("PictureGuid")
-                        .HasColumnType("char(36)");
-
-                    b.Property<int>("PriviledgeLevel")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PromotedBy")
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Admins");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1ul,
-                            ConcurrencyStamp = new Guid("94c04e7d-8621-4fb5-954c-57d2ef0da5e8"),
-                            Family = "Admin",
-                            Name = "Admin",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJX8TDl/K5nx//kW59tam5Lsh54y2NikwYHYS7Keq8jjMlDxJA6TmTo2QG3UsHnVjQ==",
-                            PriviledgeLevel = -1,
-                            Username = "site-admin"
-                        });
                 });
 
             modelBuilder.Entity("Banq.Database.Entities.City", b =>
