@@ -12,47 +12,47 @@ namespace Banq.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SchoolController : ControllerBase
+    public class LessonsController : ControllerBase
     {
         private readonly DatabaseContext _context;
 
-        public SchoolController(DatabaseContext context)
+        public LessonsController(DatabaseContext context)
         {
             _context = context;
         }
 
-        // GET: api/School
+        // GET: api/Lessons
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<School>>> GetSchools()
+        public async Task<ActionResult<IEnumerable<Lesson>>> GetLessons()
         {
-            return await _context.Schools.ToListAsync();
+            return await _context.Lessons.ToListAsync();
         }
 
-        // GET: api/School/5
+        // GET: api/Lessons/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<School>> GetSchool(string id)
+        public async Task<ActionResult<Lesson>> GetLesson(string id)
         {
-            var school = await _context.Schools.FindAsync(id);
+            var lesson = await _context.Lessons.FindAsync(id);
 
-            if (school == null)
+            if (lesson == null)
             {
                 return NotFound();
             }
 
-            return school;
+            return lesson;
         }
 
-        // PUT: api/School/5
+        // PUT: api/Lessons/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSchool(string id, School school)
+        public async Task<IActionResult> PutLesson(string id, Lesson lesson)
         {
-            if (id != school.Code)
+            if (id != lesson.Code)
             {
                 return BadRequest();
             }
 
-            _context.Entry(school).State = EntityState.Modified;
+            _context.Entry(lesson).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace Banq.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!SchoolExists(id))
+                if (!LessonExists(id))
                 {
                     return NotFound();
                 }
@@ -73,19 +73,19 @@ namespace Banq.Controllers
             return NoContent();
         }
 
-        // POST: api/School
+        // POST: api/Lessons
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<School>> PostSchool(School school)
+        public async Task<ActionResult<Lesson>> PostLesson(Lesson lesson)
         {
-            _context.Schools.Add(school);
+            _context.Lessons.Add(lesson);
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateException)
             {
-                if (SchoolExists(school.Code))
+                if (LessonExists(lesson.Code))
                 {
                     return Conflict();
                 }
@@ -95,28 +95,28 @@ namespace Banq.Controllers
                 }
             }
 
-            return CreatedAtAction("GetSchool", new { id = school.Code }, school);
+            return CreatedAtAction("GetLesson", new { id = lesson.Code }, lesson);
         }
 
-        // DELETE: api/School/5
+        // DELETE: api/Lessons/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSchool(string id)
+        public async Task<IActionResult> DeleteLesson(string id)
         {
-            var school = await _context.Schools.FindAsync(id);
-            if (school == null)
+            var lesson = await _context.Lessons.FindAsync(id);
+            if (lesson == null)
             {
                 return NotFound();
             }
 
-            _context.Schools.Remove(school);
+            _context.Lessons.Remove(lesson);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool SchoolExists(string id)
+        private bool LessonExists(string id)
         {
-            return _context.Schools.Any(e => e.Code == id);
+            return _context.Lessons.Any(e => e.Code == id);
         }
     }
 }

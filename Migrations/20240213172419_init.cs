@@ -86,59 +86,6 @@ namespace Banq.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "CityAndOffices",
-                columns: table => new
-                {
-                    CityCode = table.Column<string>(type: "varchar(4)", maxLength: 4, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    OfficeCode = table.Column<string>(type: "varchar(4)", maxLength: 4, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CityAndOffices", x => new { x.CityCode, x.OfficeCode });
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Classes",
-                columns: table => new
-                {
-                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Code = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    LessonCode = table.Column<string>(type: "varchar(5)", maxLength: 5, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Name = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Classes", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "FieldAndLessonsAndGrades",
-                columns: table => new
-                {
-                    FieldCode = table.Column<string>(type: "varchar(2)", maxLength: 2, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    LessonCode = table.Column<string>(type: "varchar(5)", maxLength: 5, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Grade = table.Column<int>(type: "int", nullable: false),
-                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FieldAndLessonsAndGrades", x => new { x.FieldCode, x.LessonCode, x.Grade });
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Fields",
                 columns: table => new
                 {
@@ -189,61 +136,6 @@ namespace Banq.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "ManagerAndSchools",
-                columns: table => new
-                {
-                    ManagerPersonnelCode = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    SchoolCode = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ManagerAndSchools", x => new { x.ManagerPersonnelCode, x.SchoolCode });
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Managers",
-                columns: table => new
-                {
-                    PersonnelCode = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PasswordHash = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Family = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Biography = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PictureGuid = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Managers", x => x.PersonnelCode);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "OfficeAndSchools",
-                columns: table => new
-                {
-                    OfficeCode = table.Column<string>(type: "varchar(4)", maxLength: 4, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    SchoolCode = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OfficeAndSchools", x => new { x.OfficeCode, x.SchoolCode });
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Offices",
                 columns: table => new
                 {
@@ -256,22 +148,6 @@ namespace Banq.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Offices", x => x.Code);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "ProvinceAndCities",
-                columns: table => new
-                {
-                    ProvinceCode = table.Column<string>(type: "varchar(4)", maxLength: 4, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    CityCode = table.Column<string>(type: "varchar(4)", maxLength: 4, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProvinceAndCities", x => new { x.ProvinceCode, x.CityCode });
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -310,21 +186,6 @@ namespace Banq.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "SchoolAndClasses",
-                columns: table => new
-                {
-                    SchoolCode = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ClassId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
-                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SchoolAndClasses", x => new { x.SchoolCode, x.ClassId });
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Schools",
                 columns: table => new
                 {
@@ -340,109 +201,6 @@ namespace Banq.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Schools", x => x.Code);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "SchoolsAndFields",
-                columns: table => new
-                {
-                    SchoolCode = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    FieldCode = table.Column<string>(type: "varchar(2)", maxLength: 2, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SchoolsAndFields", x => new { x.SchoolCode, x.FieldCode });
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "TeacherAndClassesAndQuestions",
-                columns: table => new
-                {
-                    TeacherPersonnelCode = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ClassId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
-                    QuestionId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
-                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TeacherAndClassesAndQuestions", x => new { x.TeacherPersonnelCode, x.ClassId, x.QuestionId });
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Teachers",
-                columns: table => new
-                {
-                    PersonnelCode = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PasswordHash = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Family = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    Biography = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    WantsToCheckOtherQuestions = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    PictureGuid = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Teachers", x => x.PersonnelCode);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "TeachersAndClasses",
-                columns: table => new
-                {
-                    TeacherPersonnelCode = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ClassId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
-                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TeachersAndClasses", x => new { x.TeacherPersonnelCode, x.ClassId });
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "TeachersAndFieldOfTeaches",
-                columns: table => new
-                {
-                    TeacherPersonnelCode = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    FieldOfTeachCode = table.Column<string>(type: "varchar(3)", maxLength: 3, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TeachersAndFieldOfTeaches", x => new { x.TeacherPersonnelCode, x.FieldOfTeachCode });
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "TeachersAndSchools",
-                columns: table => new
-                {
-                    SchoolCode = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    TeacherPersonnelCode = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TeachersAndSchools", x => new { x.SchoolCode, x.TeacherPersonnelCode });
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -573,6 +331,55 @@ namespace Banq.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "Comments",
+                columns: table => new
+                {
+                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Content = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Likes = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Comments_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Classes",
+                columns: table => new
+                {
+                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Code = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LessonCode = table.Column<string>(type: "varchar(5)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Name = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Classes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Classes_Lessons_LessonCode",
+                        column: x => x.LessonCode,
+                        principalTable: "Lessons",
+                        principalColumn: "Code",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -609,6 +416,16 @@ namespace Banq.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Classes_LessonCode",
+                table: "Classes",
+                column: "LessonCode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_UserId",
+                table: "Comments",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -633,13 +450,10 @@ namespace Banq.Migrations
                 name: "Cities");
 
             migrationBuilder.DropTable(
-                name: "CityAndOffices");
-
-            migrationBuilder.DropTable(
                 name: "Classes");
 
             migrationBuilder.DropTable(
-                name: "FieldAndLessonsAndGrades");
+                name: "Comments");
 
             migrationBuilder.DropTable(
                 name: "Fields");
@@ -648,22 +462,7 @@ namespace Banq.Migrations
                 name: "FieldsOfTeach");
 
             migrationBuilder.DropTable(
-                name: "Lessons");
-
-            migrationBuilder.DropTable(
-                name: "ManagerAndSchools");
-
-            migrationBuilder.DropTable(
-                name: "Managers");
-
-            migrationBuilder.DropTable(
-                name: "OfficeAndSchools");
-
-            migrationBuilder.DropTable(
                 name: "Offices");
-
-            migrationBuilder.DropTable(
-                name: "ProvinceAndCities");
 
             migrationBuilder.DropTable(
                 name: "Provinces");
@@ -672,31 +471,13 @@ namespace Banq.Migrations
                 name: "Questions");
 
             migrationBuilder.DropTable(
-                name: "SchoolAndClasses");
-
-            migrationBuilder.DropTable(
                 name: "Schools");
 
             migrationBuilder.DropTable(
-                name: "SchoolsAndFields");
-
-            migrationBuilder.DropTable(
-                name: "TeacherAndClassesAndQuestions");
-
-            migrationBuilder.DropTable(
-                name: "Teachers");
-
-            migrationBuilder.DropTable(
-                name: "TeachersAndClasses");
-
-            migrationBuilder.DropTable(
-                name: "TeachersAndFieldOfTeaches");
-
-            migrationBuilder.DropTable(
-                name: "TeachersAndSchools");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Lessons");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

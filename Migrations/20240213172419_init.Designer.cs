@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Banq.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240102163815_init")]
+    [Migration("20240213172419_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -121,7 +121,6 @@ namespace Banq.Migrations
 
                     b.Property<string>("LessonCode")
                         .IsRequired()
-                        .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
 
                     b.Property<string>("Name")
@@ -130,7 +129,32 @@ namespace Banq.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LessonCode");
+
                     b.ToTable("Classes");
+                });
+
+            modelBuilder.Entity("Banq.Database.Entities.Comment", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Likes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("Banq.Database.Entities.Field", b =>
@@ -193,41 +217,6 @@ namespace Banq.Migrations
                     b.HasKey("Code");
 
                     b.ToTable("Lessons");
-                });
-
-            modelBuilder.Entity("Banq.Database.Entities.Manager", b =>
-                {
-                    b.Property<string>("PersonnelCode")
-                        .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
-
-                    b.Property<string>("Biography")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<Guid>("ConcurrencyStamp")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Family")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<Guid?>("PictureGuid")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("PersonnelCode");
-
-                    b.ToTable("Managers");
                 });
 
             modelBuilder.Entity("Banq.Database.Entities.Office", b =>
@@ -294,207 +283,6 @@ namespace Banq.Migrations
                     b.ToTable("Questions");
                 });
 
-            modelBuilder.Entity("Banq.Database.Entities.Relations.CityAndOffice", b =>
-                {
-                    b.Property<string>("CityCode")
-                        .HasMaxLength(4)
-                        .HasColumnType("varchar(4)");
-
-                    b.Property<string>("OfficeCode")
-                        .HasMaxLength(4)
-                        .HasColumnType("varchar(4)");
-
-                    b.Property<Guid>("ConcurrencyStamp")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("CityCode", "OfficeCode");
-
-                    b.ToTable("CityAndOffices");
-                });
-
-            modelBuilder.Entity("Banq.Database.Entities.Relations.FieldAndLessonAndGrade", b =>
-                {
-                    b.Property<string>("FieldCode")
-                        .HasMaxLength(2)
-                        .HasColumnType("varchar(2)");
-
-                    b.Property<string>("LessonCode")
-                        .HasMaxLength(5)
-                        .HasColumnType("varchar(5)");
-
-                    b.Property<int>("Grade")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("ConcurrencyStamp")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("FieldCode", "LessonCode", "Grade");
-
-                    b.ToTable("FieldAndLessonsAndGrades");
-                });
-
-            modelBuilder.Entity("Banq.Database.Entities.Relations.ManagerAndSchool", b =>
-                {
-                    b.Property<string>("ManagerPersonnelCode")
-                        .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
-
-                    b.Property<string>("SchoolCode")
-                        .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
-
-                    b.Property<Guid>("ConcurrencyStamp")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("ManagerPersonnelCode", "SchoolCode");
-
-                    b.ToTable("ManagerAndSchools");
-                });
-
-            modelBuilder.Entity("Banq.Database.Entities.Relations.OfficeAndSchool", b =>
-                {
-                    b.Property<string>("OfficeCode")
-                        .HasMaxLength(4)
-                        .HasColumnType("varchar(4)");
-
-                    b.Property<string>("SchoolCode")
-                        .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
-
-                    b.Property<Guid>("ConcurrencyStamp")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("OfficeCode", "SchoolCode");
-
-                    b.ToTable("OfficeAndSchools");
-                });
-
-            modelBuilder.Entity("Banq.Database.Entities.Relations.ProvinceAndCity", b =>
-                {
-                    b.Property<string>("ProvinceCode")
-                        .HasMaxLength(4)
-                        .HasColumnType("varchar(4)");
-
-                    b.Property<string>("CityCode")
-                        .HasMaxLength(4)
-                        .HasColumnType("varchar(4)");
-
-                    b.Property<Guid>("ConcurrencyStamp")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("ProvinceCode", "CityCode");
-
-                    b.ToTable("ProvinceAndCities");
-                });
-
-            modelBuilder.Entity("Banq.Database.Entities.Relations.SchoolAndClass", b =>
-                {
-                    b.Property<string>("SchoolCode")
-                        .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
-
-                    b.Property<ulong>("ClassId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<Guid>("ConcurrencyStamp")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("SchoolCode", "ClassId");
-
-                    b.ToTable("SchoolAndClasses");
-                });
-
-            modelBuilder.Entity("Banq.Database.Entities.Relations.SchoolAndField", b =>
-                {
-                    b.Property<string>("SchoolCode")
-                        .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
-
-                    b.Property<string>("FieldCode")
-                        .HasMaxLength(2)
-                        .HasColumnType("varchar(2)");
-
-                    b.Property<Guid>("ConcurrencyStamp")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("SchoolCode", "FieldCode");
-
-                    b.ToTable("SchoolsAndFields");
-                });
-
-            modelBuilder.Entity("Banq.Database.Entities.Relations.TeacherAndClass", b =>
-                {
-                    b.Property<string>("TeacherPersonnelCode")
-                        .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
-
-                    b.Property<ulong>("ClassId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<Guid>("ConcurrencyStamp")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("TeacherPersonnelCode", "ClassId");
-
-                    b.ToTable("TeachersAndClasses");
-                });
-
-            modelBuilder.Entity("Banq.Database.Entities.Relations.TeacherAndClassAndQuestion", b =>
-                {
-                    b.Property<string>("TeacherPersonnelCode")
-                        .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
-
-                    b.Property<ulong>("ClassId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<ulong>("QuestionId")
-                        .HasColumnType("bigint unsigned");
-
-                    b.Property<Guid>("ConcurrencyStamp")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("TeacherPersonnelCode", "ClassId", "QuestionId");
-
-                    b.ToTable("TeacherAndClassesAndQuestions");
-                });
-
-            modelBuilder.Entity("Banq.Database.Entities.Relations.TeacherAndFieldOfTeach", b =>
-                {
-                    b.Property<string>("TeacherPersonnelCode")
-                        .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
-
-                    b.Property<string>("FieldOfTeachCode")
-                        .HasMaxLength(3)
-                        .HasColumnType("varchar(3)");
-
-                    b.Property<Guid>("ConcurrencyStamp")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("TeacherPersonnelCode", "FieldOfTeachCode");
-
-                    b.ToTable("TeachersAndFieldOfTeaches");
-                });
-
-            modelBuilder.Entity("Banq.Database.Entities.Relations.TeacherAndSchool", b =>
-                {
-                    b.Property<string>("SchoolCode")
-                        .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
-
-                    b.Property<string>("TeacherPersonnelCode")
-                        .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
-
-                    b.Property<Guid>("ConcurrencyStamp")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("SchoolCode", "TeacherPersonnelCode");
-
-                    b.ToTable("TeachersAndSchools");
-                });
-
             modelBuilder.Entity("Banq.Database.Entities.School", b =>
                 {
                     b.Property<string>("Code")
@@ -521,44 +309,6 @@ namespace Banq.Migrations
                     b.HasKey("Code");
 
                     b.ToTable("Schools");
-                });
-
-            modelBuilder.Entity("Banq.Database.Entities.Teacher", b =>
-                {
-                    b.Property<string>("PersonnelCode")
-                        .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
-
-                    b.Property<string>("Biography")
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<Guid>("ConcurrencyStamp")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Family")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<Guid?>("PictureGuid")
-                        .HasColumnType("char(36)");
-
-                    b.Property<bool>("WantsToCheckOtherQuestions")
-                        .HasColumnType("tinyint(1)");
-
-                    b.HasKey("PersonnelCode");
-
-                    b.ToTable("Teachers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -687,6 +437,26 @@ namespace Banq.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Banq.Database.Entities.Class", b =>
+                {
+                    b.HasOne("Banq.Database.Entities.Lesson", "Lesson")
+                        .WithMany()
+                        .HasForeignKey("LessonCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+                });
+
+            modelBuilder.Entity("Banq.Database.Entities.Comment", b =>
+                {
+                    b.HasOne("Banq.Authentication.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

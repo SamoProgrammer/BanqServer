@@ -19,7 +19,7 @@ public class Class {
 	[MinLength(Validation.Lesson.CodeLength)]
 	[MaxLength(Validation.Lesson.CodeLength)]
 	[RegularExpression(Validation.Text.NumberRegex)]
-	public string LessonCode { get; set; } = default!;
+	public Lesson Lesson { get; set; } = default!;
 
 	[Required]
 	public Guid ConcurrencyStamp { get; set; } = default!;
