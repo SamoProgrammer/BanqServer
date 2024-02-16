@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Banq.Database;
 using Banq.Database.Entities;
+using Microsoft.AspNetCore.Identity;
+using Banq.Authentication;
 
 namespace Banq.Controllers
 {
@@ -15,22 +17,24 @@ namespace Banq.Controllers
     public class CommentsController : ControllerBase
     {
         private readonly DatabaseContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CommentsController(DatabaseContext context)
+        public CommentsController(DatabaseContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: api/Comments
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Comment>>> GetComments()
+        public async Task<ActionResult<IEnumerable<CommentViewModel>>> GetComments()
         {
-            return await _context.Comments.ToListAsync();
+            return await _context.Comments.Select(x => x.ToCommentViewModel()).ToListAsync();
         }
 
         // GET: api/Comments/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Comment>> GetComment(ulong id)
+        public async Task<ActionResult<CommentViewModel>> GetComment(ulong id)
         {
             var comment = await _context.Comments.FindAsync(id);
 
@@ -39,17 +43,22 @@ namespace Banq.Controllers
                 return NotFound();
             }
 
-            return comment;
+            return comment.ToCommentViewModel();
         }
 
         // PUT: api/Comments/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutComment(ulong id, Comment comment)
+        public async Task<IActionResult> UpdateComment(ulong id, CommentDTO comment)
         {
             if (id != comment.Id)
             {
                 return BadRequest();
+            }
+
+            if (!CommentExists(id))
+            {
+                return NotFound();
             }
 
             _context.Entry(comment).State = EntityState.Modified;
@@ -60,14 +69,7 @@ namespace Banq.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CommentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
@@ -76,8 +78,9 @@ namespace Banq.Controllers
         // POST: api/Comments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Comment>> PostComment(Comment comment)
+        public async Task<ActionResult<Comment>> PostComment(CommentDTO commentDTO)
         {
+            var comment = await commentDTO.ToComment(null, _userManager);
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
 

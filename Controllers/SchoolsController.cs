@@ -23,14 +23,14 @@ namespace Banq.Controllers
 
         // GET: api/School
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<School>>> GetSchools()
+        public async Task<ActionResult<IEnumerable<SchoolViewModel>>> GetSchools()
         {
-            return await _context.Schools.ToListAsync();
+            return await _context.Schools.Select(x => x.ToSchoolViewModel()).ToListAsync();
         }
 
         // GET: api/School/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<School>> GetSchool(string id)
+        public async Task<ActionResult<SchoolViewModel>> GetSchool(string id)
         {
             var school = await _context.Schools.FindAsync(id);
 
@@ -39,14 +39,15 @@ namespace Banq.Controllers
                 return NotFound();
             }
 
-            return school;
+            return school.ToSchoolViewModel();
         }
 
         // PUT: api/School/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSchool(string id, School school)
+        public async Task<IActionResult> UpdateSchool(string id, SchoolDTO schoolDTO)
         {
+            var school = schoolDTO.ToSchool();
             if (id != school.Code)
             {
                 return BadRequest();
@@ -76,8 +77,13 @@ namespace Banq.Controllers
         // POST: api/School
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<School>> PostSchool(School school)
+        public async Task<ActionResult<School>> PostSchool(SchoolDTO schoolDTO)
         {
+            var school = schoolDTO.ToSchool();
+            if (SchoolExists(school.Code))
+            {
+                return Conflict();
+            }
             _context.Schools.Add(school);
             try
             {
@@ -85,14 +91,7 @@ namespace Banq.Controllers
             }
             catch (DbUpdateException)
             {
-                if (SchoolExists(school.Code))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest();
             }
 
             return CreatedAtAction("GetSchool", new { id = school.Code }, school);

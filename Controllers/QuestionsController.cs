@@ -23,14 +23,14 @@ namespace Banq.Controllers
 
         // GET: api/Questions
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Question>>> GetQuestions()
+        public async Task<ActionResult<IEnumerable<QuestionViewModel>>> GetQuestions()
         {
-            return await _context.Questions.ToListAsync();
+            return await _context.Questions.Select(x=>x.ToQuestionViewModel()).ToListAsync();
         }
 
         // GET: api/Questions/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Question>> GetQuestion(ulong id)
+        public async Task<ActionResult<QuestionViewModel>> GetQuestion(ulong id)
         {
             var question = await _context.Questions.FindAsync(id);
 
@@ -39,14 +39,15 @@ namespace Banq.Controllers
                 return NotFound();
             }
 
-            return question;
+            return question.ToQuestionViewModel();
         }
 
         // PUT: api/Questions/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutQuestion(ulong id, Question question)
+        public async Task<IActionResult> UpdateQuestion(ulong id, QuestionDTO questionDTO)
         {
+            var question=questionDTO.ToQuestion(null);
             if (id != question.Id)
             {
                 return BadRequest();

@@ -23,14 +23,14 @@ namespace Banq.Controllers
 
         // GET: api/Lessons
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Lesson>>> GetLessons()
+        public async Task<ActionResult<IEnumerable<LessonViewModel>>> GetLessons()
         {
-            return await _context.Lessons.ToListAsync();
+            return await _context.Lessons.Select(x => x.ToLessonViewModel()).ToListAsync();
         }
 
         // GET: api/Lessons/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Lesson>> GetLesson(string id)
+        public async Task<ActionResult<LessonViewModel>> GetLesson(string id)
         {
             var lesson = await _context.Lessons.FindAsync(id);
 
@@ -39,19 +39,23 @@ namespace Banq.Controllers
                 return NotFound();
             }
 
-            return lesson;
+            return lesson.ToLessonViewModel();
         }
 
         // PUT: api/Lessons/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutLesson(string id, Lesson lesson)
+        public async Task<IActionResult> UpdateLesson(string id, LessonDTO lessonDTO)
         {
+            var lesson = lessonDTO.ToLesson();
             if (id != lesson.Code)
             {
                 return BadRequest();
             }
-
+            if (!LessonExists(id))
+            {
+                return NotFound();
+            }
             _context.Entry(lesson).State = EntityState.Modified;
 
             try
@@ -60,14 +64,7 @@ namespace Banq.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!LessonExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return NoContent();
@@ -76,8 +73,13 @@ namespace Banq.Controllers
         // POST: api/Lessons
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Lesson>> PostLesson(Lesson lesson)
+        public async Task<ActionResult<Lesson>> PostLesson(LessonDTO lessonDTO)
         {
+            var lesson = lessonDTO.ToLesson();
+            if (LessonExists(lesson.Code))
+            {
+                return Conflict();
+            }
             _context.Lessons.Add(lesson);
             try
             {
@@ -85,14 +87,7 @@ namespace Banq.Controllers
             }
             catch (DbUpdateException)
             {
-                if (LessonExists(lesson.Code))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
             return CreatedAtAction("GetLesson", new { id = lesson.Code }, lesson);
