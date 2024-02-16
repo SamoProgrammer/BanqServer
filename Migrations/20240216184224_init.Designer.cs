@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Banq.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240213172419_init")]
+    [Migration("20240216184224_init")]
     partial class init
     {
         /// <inheritdoc />
