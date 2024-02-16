@@ -5,11 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Banq.Database.Entities;
 
-[PrimaryKey(nameof(Id))]
 public class Comment
 {
-	[Required]
-	public ulong Id { get; set; } = default!;
+	public ulong Id { get; set; }
 	public ApplicationUser User { get; set; }
 	public string Content { get; set; }
 	public int Likes { get; set; } = 0;
