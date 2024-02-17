@@ -25,7 +25,7 @@ namespace Banq.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<QuestionViewModel>>> GetQuestions()
         {
-            return await _context.Questions.Select(x=>x.ToQuestionViewModel()).ToListAsync();
+            return await _context.Questions.Select(x => x.ToQuestionViewModel()).ToListAsync();
         }
 
         // GET: api/Questions/5
@@ -47,7 +47,7 @@ namespace Banq.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateQuestion(ulong id, QuestionDTO questionDTO)
         {
-            var question=questionDTO.ToQuestion(null);
+            var question = questionDTO.ToQuestion(null);
             if (id != question.Id)
             {
                 return BadRequest();
@@ -84,6 +84,42 @@ namespace Banq.Controllers
 
             return CreatedAtAction("GetQuestion", new { id = question.Id }, question);
         }
+
+
+        [HttpPost("UploadQuestionFile")]
+        public async Task<IActionResult> UploadFile([FromForm] IFormFile file, ulong id)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file was uploaded");
+            }
+
+            if (!await _context.Questions.AnyAsync(x => x.Id == id))
+            {
+                return BadRequest("No question was uploaded");
+            }
+
+            var fileExtension = Path.GetExtension(file.FileName).ToLower();
+            if (fileExtension != ".pdf" || fileExtension != ".docx" || fileExtension != ".doc")
+            {
+                return BadRequest("Only document files are allowed");
+            }
+
+            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            string filePath = Path.Combine(uploadsFolder, id + "-" + file.FileName);
+            using (Stream fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            return Ok();
+        }
+
 
         // DELETE: api/Questions/5
         [HttpDelete("{id}")]
