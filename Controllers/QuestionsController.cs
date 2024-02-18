@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Banq.Database;
 using Banq.Database.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Banq.Authentication;
 
 namespace Banq.Controllers
 {
+    [Authorize(Roles = UserRoles.Admin + "," + UserRoles.Manager + "," + UserRoles.Teacher)]
     [Route("api/[controller]")]
     [ApiController]
     public class QuestionsController : ControllerBase

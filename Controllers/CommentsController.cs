@@ -9,9 +9,11 @@ using Banq.Database;
 using Banq.Database.Entities;
 using Microsoft.AspNetCore.Identity;
 using Banq.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Banq.Controllers
 {
+    [Authorize(Roles = UserRoles.Admin)]
     [Route("api/[controller]")]
     [ApiController]
     public class CommentsController : ControllerBase
@@ -48,6 +50,7 @@ namespace Banq.Controllers
 
         // PUT: api/Comments/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.Manager + "," + UserRoles.Teacher)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateComment(ulong id, CommentDTO comment)
         {
@@ -77,6 +80,7 @@ namespace Banq.Controllers
 
         // POST: api/Comments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.Manager + "," + UserRoles.Teacher)]
         [HttpPost]
         public async Task<ActionResult<Comment>> PostComment(CommentDTO commentDTO)
         {
