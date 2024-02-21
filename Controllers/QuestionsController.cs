@@ -90,7 +90,7 @@ namespace Banq.Controllers
 
 
         [HttpPost("UploadQuestionFile")]
-        public async Task<IActionResult> UploadFile([FromForm] IFormFile file, ulong id)
+        public async Task<IActionResult> UploadFile(IFormFile file, ulong id)
         {
             if (file == null || file.Length == 0)
             {
