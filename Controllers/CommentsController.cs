@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Banq.Controllers
 {
-    [Authorize(Roles = UserRoles.Admin)]
+    // [Authorize(Roles = UserRoles.Admin)]
     [Route("api/[controller]")]
     [ApiController]
     public class CommentsController : ControllerBase

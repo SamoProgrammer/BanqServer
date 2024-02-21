@@ -12,7 +12,7 @@ using Banq.Authentication;
 
 namespace Banq.Controllers
 {
-    [Authorize(Roles = UserRoles.Admin)]
+    // [Authorize(Roles = UserRoles.Admin)]
     [Route("api/[controller]")]
     [ApiController]
     public class SchoolsController : ControllerBase
