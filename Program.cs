@@ -80,5 +80,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.UseCors();
 app.Run();

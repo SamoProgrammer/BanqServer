@@ -8,11 +8,10 @@ public class QuestionViewModel
 {
 	public ulong Id { get; set; }
 	public DateTime Time { get; set; } = default!;
-
-	[EnumDataType(typeof(Type))]
 	public Type Type { get; set; } = default!;
-
-	[EnumDataType(typeof(Level))]
 	public Level Level { get; set; } = default!;
+	public Lesson Lesson { get; set; }
+	public Field Field { get; set; }
+	public Grade Grade { get; set; }
 
 }

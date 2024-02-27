@@ -263,6 +263,21 @@ namespace Banq.Migrations
                     b.Property<Guid>("ConcurrencyStamp")
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("FieldCode")
+                        .IsRequired()
+                        .HasColumnType("varchar(2)");
+
+                    b.Property<string>("FileLink")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Grade")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LessonCode")
+                        .IsRequired()
+                        .HasColumnType("varchar(5)");
+
                     b.Property<int>("Level")
                         .HasColumnType("int");
 
@@ -276,6 +291,10 @@ namespace Banq.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FieldCode");
+
+                    b.HasIndex("LessonCode");
 
                     b.ToTable("Questions");
                 });
@@ -454,6 +473,25 @@ namespace Banq.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Banq.Database.Entities.Question", b =>
+                {
+                    b.HasOne("Banq.Database.Entities.Field", "Field")
+                        .WithMany()
+                        .HasForeignKey("FieldCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Banq.Database.Entities.Lesson", "Lesson")
+                        .WithMany()
+                        .HasForeignKey("LessonCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Field");
+
+                    b.Navigation("Lesson");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

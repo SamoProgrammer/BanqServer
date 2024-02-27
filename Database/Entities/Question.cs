@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Banq.Database.Entities;
 
 [PrimaryKey(nameof(Id))]
-public class Question {
+public class Question
+{
 	[Required]
 	public ulong Id { get; set; }
 
@@ -23,16 +24,30 @@ public class Question {
 	public Level Level { get; set; } = default!;
 
 	[Required]
+	public virtual Lesson Lesson { get; set; }
+
+	[Required]
+	public virtual Field Field { get; set; }
+
+	[Required]
+	[EnumDataType(typeof(Grade))]
+	public Grade Grade { get; set; }
+
+	[Required]
 	public Guid ConcurrencyStamp { get; set; } = default!;
+
+	public string FileLink { get; set; } = "";
 }
 
-public enum Type {
+public enum Type
+{
 	Pdf = 1,
 	Docx,
 	Text
 }
 
-public enum Level {
+public enum Level
+{
 	Easy = 1,
 	Medium,
 	Hard

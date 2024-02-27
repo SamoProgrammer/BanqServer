@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Banq.Authentication;
 using Banq.Database.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Banq.Database
 {
@@ -59,7 +60,7 @@ namespace Banq.Database
             {
                 return new Comment
                 {
-                    Id=(ulong)id,
+                    Id = (ulong)id,
                     Content = comment.Content,
                     Likes = comment.Likes,
                     User = await userManager.FindByNameAsync(comment.Username)
@@ -87,6 +88,24 @@ namespace Banq.Database
             };
         }
 
+        public static FieldViewModel ToFieldViewModel(this Field field)
+        {
+            return new FieldViewModel
+            {
+                Code = field.Code,
+                Name = field.Name,
+            };
+        }
+
+        public static Field ToField(this FieldDTO field)
+        {
+            return new Field
+            {
+                Code = field.Code,
+                Name = field.Name,
+            };
+        }
+
 
         public static QuestionViewModel ToQuestionViewModel(this Question question)
         {
@@ -94,19 +113,25 @@ namespace Banq.Database
             {
                 Level = question.Level,
                 Time = question.Time,
-                Type = question.Type
+                Type = question.Type,
+                Field = question.Field,
+                Grade = question.Grade,
+                Lesson = question.Lesson,
             };
         }
 
-        public static Question ToQuestion(this QuestionDTO question, ulong? id)
+        public static async Task<Question> ToQuestion(this QuestionDTO question, DatabaseContext databaseContext, ulong id = 0)
         {
-            if (id == null)
+            if (id == 0)
             {
                 return new Question
                 {
                     Level = question.Level,
                     Time = question.Time,
-                    Type = question.Type
+                    Type = question.Type,
+                    Field = await databaseContext.Fields.Where(x => x.Name == question.FieldName).FirstAsync(),
+                    Lesson = await databaseContext.Lessons.Where(x => x.Name == question.LessonName).FirstAsync(),
+                    Grade = question.Grade
                 };
             }
             else
@@ -116,7 +141,10 @@ namespace Banq.Database
                     Id = (ulong)id,
                     Level = question.Level,
                     Time = question.Time,
-                    Type = question.Type
+                    Type = question.Type,
+                    Field = await databaseContext.Fields.Where(x => x.Name == question.FieldName).FirstAsync(),
+                    Lesson = await databaseContext.Lessons.Where(x => x.Name == question.LessonName).FirstAsync(),
+                    Grade = question.Grade
                 };
             }
         }
