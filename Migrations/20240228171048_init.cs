@@ -168,24 +168,6 @@ namespace Banq.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Questions",
-                columns: table => new
-                {
-                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ServerTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Time = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    Level = table.Column<int>(type: "int", nullable: false),
-                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Questions", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Schools",
                 columns: table => new
                 {
@@ -380,6 +362,43 @@ namespace Banq.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "Questions",
+                columns: table => new
+                {
+                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ServerTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Time = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    Level = table.Column<int>(type: "int", nullable: false),
+                    LessonCode = table.Column<string>(type: "varchar(5)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    FieldCode = table.Column<string>(type: "varchar(2)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Grade = table.Column<int>(type: "int", nullable: false),
+                    ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    FileLink = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Questions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Questions_Fields_FieldCode",
+                        column: x => x.FieldCode,
+                        principalTable: "Fields",
+                        principalColumn: "Code",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Questions_Lessons_LessonCode",
+                        column: x => x.LessonCode,
+                        principalTable: "Lessons",
+                        principalColumn: "Code",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -426,6 +445,16 @@ namespace Banq.Migrations
                 name: "IX_Comments_UserId",
                 table: "Comments",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Questions_FieldCode",
+                table: "Questions",
+                column: "FieldCode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Questions_LessonCode",
+                table: "Questions",
+                column: "LessonCode");
         }
 
         /// <inheritdoc />
@@ -456,9 +485,6 @@ namespace Banq.Migrations
                 name: "Comments");
 
             migrationBuilder.DropTable(
-                name: "Fields");
-
-            migrationBuilder.DropTable(
                 name: "FieldsOfTeach");
 
             migrationBuilder.DropTable(
@@ -477,10 +503,13 @@ namespace Banq.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Lessons");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Fields");
+
+            migrationBuilder.DropTable(
+                name: "Lessons");
         }
     }
 }
