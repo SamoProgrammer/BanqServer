@@ -47,9 +47,20 @@ namespace Banq.Controllers
             return question.ToQuestionViewModel();
         }
 
-        // public async Task<IActionResult<QuestionViewModel>> SearchQuestions(){
+        public async Task<IActionResult> SearchQuestions(string fieldName, string lessonName, Grade grade)
+        {
+            if (!await _context.Fields.AnyAsync(x => x.Name == fieldName))
+            {
+                return BadRequest("Field not found!");
+            }
 
-        // }
+            if (!await _context.Lessons.AnyAsync(x => x.Name == lessonName))
+            {
+                return BadRequest("Lesson not found!");
+            }
+
+            return Ok(await _context.Questions.Include(x => x.Lesson).Include(x => x.Field).Where(x => x.Lesson.Name == lessonName && x.Field.Name == fieldName && x.Grade == grade).Select(x => x.ToQuestionViewModel()).ToListAsync());
+        }
 
         // PUT: api/Questions/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
