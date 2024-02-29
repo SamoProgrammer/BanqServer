@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Banq.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240228171048_init")]
+    [Migration("20240229082632_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -263,6 +263,10 @@ namespace Banq.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint unsigned");
 
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
                     b.Property<Guid>("ConcurrencyStamp")
                         .HasColumnType("char(36)");
 
@@ -294,6 +298,8 @@ namespace Banq.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
 
                     b.HasIndex("FieldCode");
 
@@ -480,6 +486,12 @@ namespace Banq.Migrations
 
             modelBuilder.Entity("Banq.Database.Entities.Question", b =>
                 {
+                    b.HasOne("Banq.Authentication.ApplicationUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Banq.Database.Entities.Field", "Field")
                         .WithMany()
                         .HasForeignKey("FieldCode")
@@ -491,6 +503,8 @@ namespace Banq.Migrations
                         .HasForeignKey("LessonCode")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Author");
 
                     b.Navigation("Field");
 

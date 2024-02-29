@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Banq.Authentication;
 using Banq.Utilities;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,5 +14,6 @@ public class QuestionViewModel
 	public Lesson Lesson { get; set; }
 	public Field Field { get; set; }
 	public Grade Grade { get; set; }
+	public ApplicationUser Author { get; set; }
 
 }

@@ -9,35 +9,38 @@ using Banq.Database;
 using Banq.Database.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Banq.Authentication;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace Banq.Controllers
 {
-    // [Authorize(Roles = UserRoles.Admin + "," + UserRoles.Manager + "," + UserRoles.Teacher)]
     [Route("api/[controller]")]
     [ApiController]
     public class QuestionsController : ControllerBase
     {
         private readonly DatabaseContext _context;
         private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public QuestionsController(DatabaseContext context, IWebHostEnvironment hostEnvironment)
+        public QuestionsController(DatabaseContext context, IWebHostEnvironment hostEnvironment, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _hostEnvironment = hostEnvironment;
+            _userManager = userManager;
         }
 
         // GET: api/Questions
         [HttpGet]
         public async Task<ActionResult<IEnumerable<QuestionViewModel>>> GetQuestions()
         {
-            return await _context.Questions.Include(x => x.Lesson).Include(x => x.Field).Select(x => x.ToQuestionViewModel()).ToListAsync();
+            return await _context.Questions.Include(x => x.Lesson).Include(x => x.Field).Include(x => x.Author).Select(x => x.ToQuestionViewModel()).ToListAsync();
         }
 
         // GET: api/Questions/5
         [HttpGet("{id}")]
         public async Task<ActionResult<QuestionViewModel>> GetQuestion(ulong id)
         {
-            var question = await _context.Questions.Include(x => x.Lesson).Include(x => x.Field).Where(x => x.Id == id).FirstAsync();
+            var question = await _context.Questions.Include(x => x.Lesson).Include(x => x.Field).Include(x => x.Author).Where(x => x.Id == id).FirstAsync();
 
             if (question == null)
             {
@@ -46,7 +49,7 @@ namespace Banq.Controllers
 
             return question.ToQuestionViewModel();
         }
-
+        [HttpGet("SeacrhQuestion")]
         public async Task<IActionResult> SearchQuestions(string fieldName, string lessonName, Grade grade)
         {
             if (!await _context.Fields.AnyAsync(x => x.Name == fieldName))
@@ -59,11 +62,12 @@ namespace Banq.Controllers
                 return BadRequest("Lesson not found!");
             }
 
-            return Ok(await _context.Questions.Include(x => x.Lesson).Include(x => x.Field).Where(x => x.Lesson.Name == lessonName && x.Field.Name == fieldName && x.Grade == grade).Select(x => x.ToQuestionViewModel()).ToListAsync());
+            return Ok(await _context.Questions.Include(x => x.Lesson).Include(x => x.Field).Include(x => x.Author).Where(x => x.Lesson.Name == lessonName && x.Field.Name == fieldName && x.Grade == grade).Select(x => x.ToQuestionViewModel()).ToListAsync());
         }
 
         // PUT: api/Questions/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Teacher}")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateQuestion(ulong id, QuestionDTO questionDTO)
         {
@@ -72,7 +76,10 @@ namespace Banq.Controllers
                 return BadRequest("Question not found!");
             }
 
-            var question = await questionDTO.ToQuestion(_context, id);
+            string username = User.FindFirst(ClaimTypes.Name)?.Value;
+            var user = await _userManager.FindByNameAsync(username);
+
+            var question = await questionDTO.ToQuestion(_context, user, id);
             if (id != question.Id)
             {
                 return BadRequest();
@@ -101,6 +108,7 @@ namespace Banq.Controllers
 
         // POST: api/Questions
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Teacher}")]
         [HttpPost]
         public async Task<ActionResult<Question>> PostQuestion(QuestionDTO questionDTO)
         {
@@ -114,14 +122,17 @@ namespace Banq.Controllers
                 return BadRequest("Lesson not found!");
             }
 
-            var question = await questionDTO.ToQuestion(_context, 0);
+            string username = User.FindFirst(ClaimTypes.Name)?.Value;
+            var user = await _userManager.FindByNameAsync(username);
+
+            var question = await questionDTO.ToQuestion(_context, user, 0);
             await _context.Questions.AddAsync(question);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetQuestion", new { id = question.Id }, question);
         }
 
-
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Teacher}")]
         [HttpPost("UploadQuestionFile")]
         public async Task<IActionResult> UploadFile(IFormFile file, ulong id)
         {
@@ -175,6 +186,7 @@ namespace Banq.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Teacher}")]
         [HttpGet("DownloadQuestionFile")]
         public async Task<IActionResult> DownloadFile(ulong id)
         {

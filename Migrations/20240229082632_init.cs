@@ -370,6 +370,8 @@ namespace Banq.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     ServerTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Time = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    AuthorId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Type = table.Column<int>(type: "int", nullable: false),
                     Level = table.Column<int>(type: "int", nullable: false),
                     LessonCode = table.Column<string>(type: "varchar(5)", nullable: false)
@@ -384,6 +386,12 @@ namespace Banq.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Questions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Questions_AspNetUsers_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Questions_Fields_FieldCode",
                         column: x => x.FieldCode,
@@ -445,6 +453,11 @@ namespace Banq.Migrations
                 name: "IX_Comments_UserId",
                 table: "Comments",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Questions_AuthorId",
+                table: "Questions",
+                column: "AuthorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Questions_FieldCode",

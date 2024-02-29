@@ -117,10 +117,11 @@ namespace Banq.Database
                 Field = question.Field,
                 Grade = question.Grade,
                 Lesson = question.Lesson,
+                Author = question.Author
             };
         }
 
-        public static async Task<Question> ToQuestion(this QuestionDTO question, DatabaseContext databaseContext, ulong id = 0)
+        public static async Task<Question> ToQuestion(this QuestionDTO question, DatabaseContext databaseContext, ApplicationUser author, ulong id = 0)
         {
             if (id == 0)
             {
@@ -131,7 +132,8 @@ namespace Banq.Database
                     Type = question.Type,
                     Field = await databaseContext.Fields.Where(x => x.Name == question.FieldName).FirstAsync(),
                     Lesson = await databaseContext.Lessons.Where(x => x.Name == question.LessonName).FirstAsync(),
-                    Grade = question.Grade
+                    Grade = question.Grade,
+                    Author = author
                 };
             }
             else
@@ -144,7 +146,8 @@ namespace Banq.Database
                     Type = question.Type,
                     Field = await databaseContext.Fields.Where(x => x.Name == question.FieldName).FirstAsync(),
                     Lesson = await databaseContext.Lessons.Where(x => x.Name == question.LessonName).FirstAsync(),
-                    Grade = question.Grade
+                    Grade = question.Grade,
+                    Author = author
                 };
             }
         }

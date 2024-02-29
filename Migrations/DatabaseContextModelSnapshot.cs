@@ -260,6 +260,10 @@ namespace Banq.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint unsigned");
 
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
                     b.Property<Guid>("ConcurrencyStamp")
                         .HasColumnType("char(36)");
 
@@ -291,6 +295,8 @@ namespace Banq.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
 
                     b.HasIndex("FieldCode");
 
@@ -477,6 +483,12 @@ namespace Banq.Migrations
 
             modelBuilder.Entity("Banq.Database.Entities.Question", b =>
                 {
+                    b.HasOne("Banq.Authentication.ApplicationUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Banq.Database.Entities.Field", "Field")
                         .WithMany()
                         .HasForeignKey("FieldCode")
@@ -488,6 +500,8 @@ namespace Banq.Migrations
                         .HasForeignKey("LessonCode")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Author");
 
                     b.Navigation("Field");
 

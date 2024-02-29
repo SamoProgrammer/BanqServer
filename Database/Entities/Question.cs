@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Banq.Authentication;
 using Microsoft.EntityFrameworkCore;
 
 namespace Banq.Database.Entities;
@@ -14,6 +15,9 @@ public class Question
 
 	[Required]
 	public DateTime Time { get; set; } = default!;
+
+	[Required]
+	public virtual ApplicationUser Author { get; set; }
 
 	[Required]
 	[EnumDataType(typeof(Type))]
