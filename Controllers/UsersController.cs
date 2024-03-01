@@ -62,7 +62,8 @@ namespace Banq.Controllers
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),
                     expiration = token.ValidTo,
-                    userId = user.Id.ToString()
+                    userId = user.Id.ToString(),
+                    roles = userRoles
                 });
             }
             return Unauthorized();
@@ -120,7 +121,7 @@ namespace Banq.Controllers
                 PersonnelCode = model.PersonnelCode,
                 WantsToCheckOtherQuestions = model.WantsToCheckOtherQuestions
             };
-            
+
             var result = await userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });

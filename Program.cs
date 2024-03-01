@@ -77,10 +77,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-app.UseAuthentication();
-app.MapControllers();
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
-app.UseCors();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseCors(x => x.AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin());
+app.MapControllers();
 app.Run();
