@@ -111,6 +111,7 @@ namespace Banq.Database
         {
             return new QuestionViewModel
             {
+                Id = question.Id,
                 Level = question.Level,
                 Time = question.Time,
                 Type = question.Type,
