@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Banq.Authentication;
 using Banq.Database.Entities;
+using Banq.DTOs;
+using Banq.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -112,42 +110,63 @@ namespace Banq.Database
             return new QuestionViewModel
             {
                 Id = question.Id,
-                Level = question.Level,
-                Time = question.Time,
-                Type = question.Type,
-                Field = question.Field,
-                Grade = question.Grade,
-                Lesson = question.Lesson,
-                Author = question.Author
+                QuestionSet = question.QuestionSet,
+                Content = question.Content,
             };
         }
 
-        public static async Task<Question> ToQuestion(this QuestionDTO question, DatabaseContext databaseContext, ApplicationUser author, ulong id = 0)
+        public async static Task<Question> ToQuestion(this QuestionDTO question, DatabaseContext databaseContext)
+        {
+            return new Question
+            {
+                QuestionSet = await databaseContext.QuestionSets.FindAsync(question.QuestionSetId),
+                Content = question.Content,
+            };
+        }
+
+
+
+        public static QuestionSetViewModel ToQuestionSetViewModel(this QuestionSet questionSet)
+        {
+            return new QuestionSetViewModel
+            {
+                Id = questionSet.Id,
+                Level = questionSet.Level,
+                Time = questionSet.Time,
+                Type = questionSet.Type,
+                Field = questionSet.Field,
+                Grade = questionSet.Grade,
+                Lesson = questionSet.Lesson,
+                Author = questionSet.Author
+            };
+        }
+
+        public static async Task<QuestionSet> ToQuestionSet(this QuestionSetDTO questionSet, DatabaseContext databaseContext, ApplicationUser author, ulong id = 0)
         {
             if (id == 0)
             {
-                return new Question
+                return new QuestionSet
                 {
-                    Level = question.Level,
-                    Time = question.Time,
-                    Type = question.Type,
-                    Field = await databaseContext.Fields.Where(x => x.Name == question.FieldName).FirstAsync(),
-                    Lesson = await databaseContext.Lessons.Where(x => x.Name == question.LessonName).FirstAsync(),
-                    Grade = question.Grade,
+                    Level = questionSet.Level,
+                    Time = questionSet.Time,
+                    Type = questionSet.Type,
+                    Field = await databaseContext.Fields.Where(x => x.Name == questionSet.FieldName).FirstAsync(),
+                    Lesson = await databaseContext.Lessons.Where(x => x.Name == questionSet.LessonName).FirstAsync(),
+                    Grade = questionSet.Grade,
                     Author = author
                 };
             }
             else
             {
-                return new Question
+                return new QuestionSet
                 {
                     Id = (ulong)id,
-                    Level = question.Level,
-                    Time = question.Time,
-                    Type = question.Type,
-                    Field = await databaseContext.Fields.Where(x => x.Name == question.FieldName).FirstAsync(),
-                    Lesson = await databaseContext.Lessons.Where(x => x.Name == question.LessonName).FirstAsync(),
-                    Grade = question.Grade,
+                    Level = questionSet.Level,
+                    Time = questionSet.Time,
+                    Type = questionSet.Type,
+                    Field = await databaseContext.Fields.Where(x => x.Name == questionSet.FieldName).FirstAsync(),
+                    Lesson = await databaseContext.Lessons.Where(x => x.Name == questionSet.LessonName).FirstAsync(),
+                    Grade = questionSet.Grade,
                     Author = author
                 };
             }

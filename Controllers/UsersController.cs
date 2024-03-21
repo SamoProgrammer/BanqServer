@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Text;
 namespace Banq.Controllers
 {
-    [EnableCors("MyPolicy")]
+    [EnableCors("CORSPolicy")]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -95,6 +95,8 @@ namespace Banq.Controllers
                 await roleManager.CreateAsync(new IdentityRole(UserRoles.Manager));
             if (!await roleManager.RoleExistsAsync(UserRoles.Teacher))
                 await roleManager.CreateAsync(new IdentityRole(UserRoles.Teacher));
+            if (!await roleManager.RoleExistsAsync(UserRoles.Supervisor))
+                await roleManager.CreateAsync(new IdentityRole(UserRoles.Supervisor));
 
             if (await roleManager.RoleExistsAsync(UserRoles.Manager))
             {
@@ -131,6 +133,8 @@ namespace Banq.Controllers
                 await roleManager.CreateAsync(new IdentityRole(UserRoles.Manager));
             if (!await roleManager.RoleExistsAsync(UserRoles.Teacher))
                 await roleManager.CreateAsync(new IdentityRole(UserRoles.Teacher));
+            if (!await roleManager.RoleExistsAsync(UserRoles.Supervisor))
+                await roleManager.CreateAsync(new IdentityRole(UserRoles.Supervisor));
 
             if (await roleManager.RoleExistsAsync(UserRoles.Teacher))
             {
@@ -163,6 +167,8 @@ namespace Banq.Controllers
                 await roleManager.CreateAsync(new IdentityRole(UserRoles.Manager));
             if (!await roleManager.RoleExistsAsync(UserRoles.Teacher))
                 await roleManager.CreateAsync(new IdentityRole(UserRoles.Teacher));
+            if (!await roleManager.RoleExistsAsync(UserRoles.Supervisor))
+                await roleManager.CreateAsync(new IdentityRole(UserRoles.Supervisor));
 
             if (await roleManager.RoleExistsAsync(UserRoles.Admin))
             {
@@ -171,6 +177,42 @@ namespace Banq.Controllers
 
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
+
+        [HttpPost]
+        [Route("Register-Supervisor")]
+        public async Task<IActionResult> RegisterSupervisor([FromBody] RegisterModel model)
+        {
+            var userExists = await userManager.FindByNameAsync(model.Username);
+            if (userExists != null)
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
+
+            ApplicationUser user = new ApplicationUser()
+            {
+                PhoneNumber = model.PhoneNumber,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserName = model.Username,
+            };
+            var result = await userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+
+            if (!await roleManager.RoleExistsAsync(UserRoles.Admin))
+                await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+            if (!await roleManager.RoleExistsAsync(UserRoles.Manager))
+                await roleManager.CreateAsync(new IdentityRole(UserRoles.Manager));
+            if (!await roleManager.RoleExistsAsync(UserRoles.Teacher))
+                await roleManager.CreateAsync(new IdentityRole(UserRoles.Teacher));
+            if (!await roleManager.RoleExistsAsync(UserRoles.Supervisor))
+                await roleManager.CreateAsync(new IdentityRole(UserRoles.Supervisor));
+
+            if (await roleManager.RoleExistsAsync(UserRoles.Supervisor))
+            {
+                await userManager.AddToRoleAsync(user, UserRoles.Supervisor);
+            }
+
+            return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+        }
+
 
     }
 }

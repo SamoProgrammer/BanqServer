@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Banq.Database.Entities;
 using Banq.Utilities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Banq.Database.Entities;
+namespace Banq.ViewModels;
 
 public class SchoolViewModel {
 	public string Code { get; set; } = default!;

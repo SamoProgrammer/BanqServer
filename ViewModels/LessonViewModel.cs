@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Banq.Utilities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Banq.Database.Entities;
+namespace Banq.ViewModels;
 
 public class LessonViewModel {
 	public string Code { get; set; } = default!;

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Banq.Utilities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Banq.Database.Entities;
+namespace Banq.DTOs;
 
 public class LessonDTO {
 	public string Code { get; set; } = default!;

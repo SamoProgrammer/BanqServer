@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Banq.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240229082632_init")]
+    [Migration("20240321084814_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -259,6 +259,26 @@ namespace Banq.Migrations
 
             modelBuilder.Entity("Banq.Database.Entities.Question", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<ulong>("QuestionSetId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionSetId");
+
+                    b.ToTable("Questions");
+                });
+
+            modelBuilder.Entity("Banq.Database.Entities.QuestionSet", b =>
+                {
                     b.Property<ulong>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint unsigned");
@@ -291,6 +311,9 @@ namespace Banq.Migrations
                     b.Property<DateTime>("ServerTime")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Time")
                         .HasColumnType("datetime(6)");
 
@@ -305,7 +328,7 @@ namespace Banq.Migrations
 
                     b.HasIndex("LessonCode");
 
-                    b.ToTable("Questions");
+                    b.ToTable("QuestionSets");
                 });
 
             modelBuilder.Entity("Banq.Database.Entities.School", b =>
@@ -485,6 +508,17 @@ namespace Banq.Migrations
                 });
 
             modelBuilder.Entity("Banq.Database.Entities.Question", b =>
+                {
+                    b.HasOne("Banq.Database.Entities.QuestionSet", "QuestionSet")
+                        .WithMany()
+                        .HasForeignKey("QuestionSetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("QuestionSet");
+                });
+
+            modelBuilder.Entity("Banq.Database.Entities.QuestionSet", b =>
                 {
                     b.HasOne("Banq.Authentication.ApplicationUser", "Author")
                         .WithMany()

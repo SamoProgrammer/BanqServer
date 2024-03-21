@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authorization;
 using Banq.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using Banq.DTOs;
+using Banq.ViewModels;
 
 namespace Banq.Controllers
 {
@@ -33,59 +35,54 @@ namespace Banq.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<QuestionViewModel>>> GetQuestions()
         {
-            return await _context.Questions.Include(x => x.Lesson).Include(x => x.Field).Include(x => x.Author).Select(x => x.ToQuestionViewModel()).ToListAsync();
+            return await _context.Questions.Select(x => x.ToQuestionViewModel()).ToListAsync();
         }
 
         // GET: api/Questions/5
         [HttpGet("{id}")]
         public async Task<ActionResult<QuestionViewModel>> GetQuestion(ulong id)
         {
-            var question = await _context.Questions.Include(x => x.Lesson).Include(x => x.Field).Include(x => x.Author).Where(x => x.Id == id).FirstAsync();
+            var Question = await _context.Questions.Where(x => x.Id == id).FirstAsync();
 
-            if (question == null)
+            if (Question == null)
             {
                 return NotFound();
             }
 
-            return question.ToQuestionViewModel();
+            return Question.ToQuestionViewModel();
         }
-        [HttpGet("SeacrhQuestion")]
-        public async Task<IActionResult> SearchQuestions(string fieldName, string lessonName, Grade grade)
+
+        [HttpGet("GetQuestionByQuestionSetId/{id}")]
+        public async Task<ActionResult<List<QuestionViewModel>>> GetQuestionByQuestionSetId(ulong id)
         {
-            if (!await _context.Fields.AnyAsync(x => x.Name == fieldName))
+            var Questions = await _context.Questions.Include(x => x.QuestionSet).Where(x => x.QuestionSet.Id == id).ToListAsync();
+
+            if (Questions == null)
             {
-                return BadRequest("Field not found!");
+                return NotFound();
             }
 
-            if (!await _context.Lessons.AnyAsync(x => x.Name == lessonName))
-            {
-                return BadRequest("Lesson not found!");
-            }
-
-            return Ok(await _context.Questions.Include(x => x.Lesson).Include(x => x.Field).Include(x => x.Author).Where(x => x.Lesson.Name == lessonName && x.Field.Name == fieldName && x.Grade == grade).Select(x => x.ToQuestionViewModel()).ToListAsync());
+            return Questions.Select(x => x.ToQuestionViewModel()).ToList();
         }
 
         // PUT: api/Questions/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Teacher}")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateQuestion(ulong id, QuestionDTO questionDTO)
+        public async Task<IActionResult> UpdateQuestion(ulong id, QuestionDTO QuestionDTO)
         {
             if (!await _context.Questions.AnyAsync(x => x.Id == id))
             {
                 return BadRequest("Question not found!");
             }
 
-            string username = User.FindFirst(ClaimTypes.Name)?.Value;
-            var user = await _userManager.FindByNameAsync(username);
-
-            var question = await questionDTO.ToQuestion(_context, user, id);
-            if (id != question.Id)
+            var Question = await QuestionDTO.ToQuestion(_context);
+            if (id != Question.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(question).State = EntityState.Modified;
+            _context.Entry(Question).State = EntityState.Modified;
 
             try
             {
@@ -110,115 +107,31 @@ namespace Banq.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Teacher}")]
         [HttpPost]
-        public async Task<ActionResult<Question>> PostQuestion(QuestionDTO questionDTO)
+        public async Task<ActionResult<Question>> PostQuestion(QuestionDTO QuestionDTO)
         {
-            if (!await _context.Fields.AnyAsync(x => x.Name == questionDTO.FieldName))
+            if (!await _context.QuestionSets.AnyAsync(x => x.Id == QuestionDTO.QuestionSetId))
             {
-                return BadRequest("Field not found!");
+                return BadRequest("Question Set not found!");
             }
 
-            if (!await _context.Lessons.AnyAsync(x => x.Name == questionDTO.LessonName))
-            {
-                return BadRequest("Lesson not found!");
-            }
-
-            string username = User.FindFirst(ClaimTypes.Name)?.Value;
-            var user = await _userManager.FindByNameAsync(username);
-
-            var question = await questionDTO.ToQuestion(_context, user, 0);
-            await _context.Questions.AddAsync(question);
+            var Question = await QuestionDTO.ToQuestion(_context);
+            await _context.Questions.AddAsync(Question);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetQuestion", new { id = question.Id }, question);
+            return CreatedAtAction("GetQuestion", new { id = Question.Id }, Question);
         }
-
-        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Teacher}")]
-        [HttpPost("UploadQuestionFile")]
-        public async Task<IActionResult> UploadFile(IFormFile file, ulong id)
-        {
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest("No file was uploaded");
-            }
-
-            if (!await _context.Questions.AnyAsync(x => x.Id == id))
-            {
-                return BadRequest("Question not found");
-            }
-
-
-
-            var fileExtension = Path.GetExtension(file.FileName).ToLower();
-
-            switch (fileExtension)
-            {
-                case ".docx":
-                    break;
-                case ".doc":
-                    break;
-                case ".pdf":
-                    break;
-                default:
-                    return BadRequest("Only document files are allowed = " + fileExtension);
-            }
-            System.Console.WriteLine(_hostEnvironment.WebRootPath);
-            string uploadsFolder = Path.Combine(_hostEnvironment.WebRootPath, "Uploads");
-
-            // if (Path.Exists(Path.Combine(uploadsFolder, id + fileExtension)))
-            // {
-            //     return BadRequest("File duplicated");
-            // }
-
-            // if (!Directory.Exists(uploadsFolder))
-            // {
-            //     Directory.CreateDirectory(uploadsFolder);
-            // }
-
-            string filePath = Path.Combine(uploadsFolder, id + fileExtension);
-            System.Console.WriteLine(filePath);
-            using (Stream fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
-            var question = await _context.Questions.FindAsync(id);
-            question.FileLink = filePath;
-            await _context.SaveChangesAsync();
-            return Ok();
-        }
-
-        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Teacher}")]
-        [HttpGet("DownloadQuestionFile")]
-        public async Task<IActionResult> DownloadFile(ulong id)
-        {
-            if (!await _context.Questions.AnyAsync(x => x.Id == id))
-            {
-                return BadRequest("Question not found");
-            }
-            var question = await _context.Questions.FindAsync(id);
-            var filePath = Path.Combine(question.FileLink);
-            if (System.IO.File.Exists(filePath))
-            {
-                var fileStream = System.IO.File.OpenRead(filePath);
-                return File(fileStream, "application/octet-stream", fileStream.Name, enableRangeProcessing: true);
-            }
-            else
-            {
-                return NotFound();
-            }
-        }
-
 
         // DELETE: api/Questions/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteQuestion(ulong id)
         {
-            var question = await _context.Questions.FindAsync(id);
-            if (question == null)
+            var Question = await _context.Questions.FindAsync(id);
+            if (Question == null)
             {
                 return NotFound();
             }
 
-            _context.Questions.Remove(question);
+            _context.Questions.Remove(Question);
             await _context.SaveChangesAsync();
 
             return NoContent();

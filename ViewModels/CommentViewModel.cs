@@ -3,7 +3,7 @@ using Banq.Authentication;
 using Banq.Utilities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Banq.Database.Entities;
+namespace Banq.ViewModels;
 
 public class CommentViewModel
 {

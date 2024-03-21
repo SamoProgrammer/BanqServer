@@ -1,19 +1,15 @@
-using System.ComponentModel.DataAnnotations;
-using Banq.Authentication;
-using Banq.Utilities;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Banq.Database.Entities;
 
-namespace Banq.Database.Entities;
-
-public class QuestionViewModel
+namespace Banq.ViewModels
 {
-	public ulong Id { get; set; }
-	public DateTime Time { get; set; } = default!;
-	public Type Type { get; set; } = default!;
-	public Level Level { get; set; } = default!;
-	public Lesson Lesson { get; set; }
-	public Field Field { get; set; }
-	public Grade Grade { get; set; }
-	public ApplicationUser Author { get; set; }
-
+    public class QuestionViewModel
+    {
+        public ulong Id { get; set; }
+        public QuestionSet QuestionSet { get; set; }
+        public string Content { get; set; }
+    }
 }

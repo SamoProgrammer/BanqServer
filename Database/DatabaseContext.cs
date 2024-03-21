@@ -27,6 +27,7 @@ public class DatabaseContext : IdentityDbContext<ApplicationUser>
 	// public DbSet<Manager> Managers { get; set; } = default!;
 	public DbSet<Office> Offices { get; set; } = default!;
 	public DbSet<Province> Provinces { get; set; } = default!;
+	public DbSet<QuestionSet> QuestionSets { get; set; } = default!;
 	public DbSet<Question> Questions { get; set; } = default!;
 	public DbSet<School> Schools { get; set; } = default!;
 	public DbSet<Comment> Comments { get; set; } = default!;

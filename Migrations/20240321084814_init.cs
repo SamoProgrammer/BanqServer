@@ -363,7 +363,7 @@ namespace Banq.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Questions",
+                name: "QuestionSets",
                 columns: table => new
                 {
                     Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
@@ -374,6 +374,7 @@ namespace Banq.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Type = table.Column<int>(type: "int", nullable: false),
                     Level = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     LessonCode = table.Column<string>(type: "varchar(5)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     FieldCode = table.Column<string>(type: "varchar(2)", nullable: false)
@@ -385,24 +386,46 @@ namespace Banq.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Questions", x => x.Id);
+                    table.PrimaryKey("PK_QuestionSets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Questions_AspNetUsers_AuthorId",
+                        name: "FK_QuestionSets_AspNetUsers_AuthorId",
                         column: x => x.AuthorId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Questions_Fields_FieldCode",
+                        name: "FK_QuestionSets_Fields_FieldCode",
                         column: x => x.FieldCode,
                         principalTable: "Fields",
                         principalColumn: "Code",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Questions_Lessons_LessonCode",
+                        name: "FK_QuestionSets_Lessons_LessonCode",
                         column: x => x.LessonCode,
                         principalTable: "Lessons",
                         principalColumn: "Code",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Questions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    QuestionSetId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
+                    Content = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Questions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Questions_QuestionSets_QuestionSetId",
+                        column: x => x.QuestionSetId,
+                        principalTable: "QuestionSets",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -455,19 +478,24 @@ namespace Banq.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Questions_AuthorId",
-                table: "Questions",
+                name: "IX_QuestionSets_AuthorId",
+                table: "QuestionSets",
                 column: "AuthorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Questions_FieldCode",
-                table: "Questions",
+                name: "IX_QuestionSets_FieldCode",
+                table: "QuestionSets",
                 column: "FieldCode");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Questions_LessonCode",
-                table: "Questions",
+                name: "IX_QuestionSets_LessonCode",
+                table: "QuestionSets",
                 column: "LessonCode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Questions_QuestionSetId",
+                table: "Questions",
+                column: "QuestionSetId");
         }
 
         /// <inheritdoc />
@@ -514,6 +542,9 @@ namespace Banq.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "QuestionSets");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
