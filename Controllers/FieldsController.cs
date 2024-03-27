@@ -7,9 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Banq.Database;
 using Banq.Database.Entities;
+using Banq.ViewModels;
+using Banq.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using Banq.Authentication;
 
 namespace Banq.Controllers
 {
+    [Authorize($"{UserRoles.Admin},{UserRoles.Supervisor}")]
     [Route("api/[controller]")]
     [ApiController]
     public class FieldsController : ControllerBase

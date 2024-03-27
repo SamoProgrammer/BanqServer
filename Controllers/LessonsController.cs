@@ -9,10 +9,12 @@ using Banq.Database;
 using Banq.Database.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Banq.Authentication;
+using Banq.DTOs;
+using Banq.ViewModels;
 
 namespace Banq.Controllers
 {
-    // [Authorize(Roles = UserRoles.Admin + "," + UserRoles.Manager + "," + UserRoles.Teacher)]
+    [Authorize($"{UserRoles.Admin},{UserRoles.Supervisor}")]
     [Route("api/[controller]")]
     [ApiController]
     public class LessonsController : ControllerBase

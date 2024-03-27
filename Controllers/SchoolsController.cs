@@ -9,6 +9,8 @@ using Banq.Database;
 using Banq.Database.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Banq.Authentication;
+using Banq.ViewModels;
+using Banq.DTOs;
 
 namespace Banq.Controllers
 {

@@ -69,7 +69,7 @@ namespace Banq.Controllers
 
         // PUT: api/QuestionSets/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Teacher}")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Teacher},{UserRoles.Supervisor}")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateQuestionSet(ulong id, QuestionSetDTO QuestionSetDTO)
         {
@@ -134,7 +134,7 @@ namespace Banq.Controllers
             return CreatedAtAction("GetQuestionSet", new { id = QuestionSet.Id }, QuestionSet);
         }
 
-        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Teacher}")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor}")]
         [HttpGet("ChangeQuestionSetStatus/{id}")]
         public async Task<IActionResult> ChangeQuestionSetStatus(ulong id, Status status)
         {
@@ -203,7 +203,7 @@ namespace Banq.Controllers
             return Ok();
         }
 
-        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Teacher}")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Teacher},{UserRoles.Supervisor}")]
         [HttpGet("DownloadQuestionSetFile")]
         public async Task<IActionResult> DownloadFile(ulong id)
         {

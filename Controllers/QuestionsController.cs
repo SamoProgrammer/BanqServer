@@ -67,7 +67,7 @@ namespace Banq.Controllers
 
         // PUT: api/Questions/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Teacher}")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor}")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateQuestion(ulong id, QuestionDTO QuestionDTO)
         {
@@ -105,7 +105,7 @@ namespace Banq.Controllers
 
         // POST: api/Questions
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Teacher}")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor}")]
         [HttpPost]
         public async Task<ActionResult<Question>> PostQuestion(QuestionDTO QuestionDTO)
         {
@@ -122,6 +122,7 @@ namespace Banq.Controllers
         }
 
         // DELETE: api/Questions/5
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor}")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteQuestion(ulong id)
         {
