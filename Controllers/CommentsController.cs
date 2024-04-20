@@ -33,14 +33,14 @@ namespace Banq.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CommentViewModel>>> GetComments()
         {
-            return await _context.Comments.Select(x => x.ToCommentViewModel()).ToListAsync();
+            return await _context.Comments.Include(x => x.User).Select(x => x.ToCommentViewModel()).ToListAsync();
         }
 
         // GET: api/Comments/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CommentViewModel>> GetComment(ulong id)
         {
-            var comment = await _context.Comments.FindAsync(id);
+            var comment = await _context.Comments.Include(x => x.User).Where(x => x.Id == id).FirstAsync();
 
             if (comment == null)
             {

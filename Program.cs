@@ -22,7 +22,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = "server=localhost;user=root;password=;database=banq";
+var connectionString = "server=localhost;user=root;password=;database=sampad-banq";
 var serverVersion = new MySqlServerVersion(new Version(8, 2, 4));
 
 
