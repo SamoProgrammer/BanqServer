@@ -17,7 +17,7 @@ namespace Banq.Database
                 CourseLevel = school.CourseLevel,
                 Gender = school.Gender,
                 Name = school.Name,
-                PictureGuid = school.PictureGuid
+                PictureURL = school.PictureURL
             };
         }
 
@@ -29,7 +29,7 @@ namespace Banq.Database
                 CourseLevel = school.CourseLevel,
                 Gender = school.Gender,
                 Name = school.Name,
-                PictureGuid = school.PictureGuid
+                PictureURL = school.PictureURL
             };
         }
 
@@ -137,7 +137,9 @@ namespace Banq.Database
                 Field = questionSet.Field,
                 Grade = questionSet.Grade,
                 Lesson = questionSet.Lesson,
-                Author = questionSet.Author
+                Author = questionSet.Author,
+                Status = questionSet.Status,
+                Name = questionSet.Name
             };
         }
 
@@ -153,7 +155,8 @@ namespace Banq.Database
                     Field = await databaseContext.Fields.Where(x => x.Name == questionSet.FieldName).FirstAsync(),
                     Lesson = await databaseContext.Lessons.Where(x => x.Name == questionSet.LessonName).FirstAsync(),
                     Grade = questionSet.Grade,
-                    Author = author
+                    Author = author,
+                    Name = questionSet.Name
                 };
             }
             else
@@ -167,7 +170,8 @@ namespace Banq.Database
                     Field = await databaseContext.Fields.Where(x => x.Name == questionSet.FieldName).FirstAsync(),
                     Lesson = await databaseContext.Lessons.Where(x => x.Name == questionSet.LessonName).FirstAsync(),
                     Grade = questionSet.Grade,
-                    Author = author
+                    Author = author,
+                    Name = questionSet.Name
                 };
             }
         }

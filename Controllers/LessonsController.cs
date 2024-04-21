@@ -14,7 +14,7 @@ using Banq.ViewModels;
 
 namespace Banq.Controllers
 {
-    [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor}")]
+    [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor},{UserRoles.Teacher}")]
     [Route("api/[controller]")]
     [ApiController]
     public class LessonsController : ControllerBase

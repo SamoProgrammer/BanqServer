@@ -178,7 +178,8 @@ namespace Banq.Migrations
                     Gender = table.Column<int>(type: "int", nullable: false),
                     CourseLevel = table.Column<int>(type: "int", nullable: false),
                     ConcurrencyStamp = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    PictureGuid = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                    PictureURL = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -368,6 +369,8 @@ namespace Banq.Migrations
                 {
                     Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     ServerTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Time = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     AuthorId = table.Column<string>(type: "varchar(255)", nullable: false)
@@ -412,7 +415,7 @@ namespace Banq.Migrations
                 name: "Questions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     QuestionSetId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
                     Content = table.Column<string>(type: "longtext", nullable: false)

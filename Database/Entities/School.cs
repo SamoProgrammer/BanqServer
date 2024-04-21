@@ -28,7 +28,7 @@ public class School {
 	[Required]
 	public Guid ConcurrencyStamp { get; set; }
 
-	public Guid? PictureGuid { get; set; }
+	public string? PictureURL { get; set; }
 }
 
 public enum Gender {

@@ -50,10 +50,10 @@ namespace Banq.Controllers
         // PUT: api/School/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSchool(string id, SchoolDTO schoolDTO)
+        public async Task<IActionResult> UpdateSchool(string code, SchoolDTO schoolDTO)
         {
             var school = schoolDTO.ToSchool();
-            if (id != school.Code)
+            if (code != school.Code)
             {
                 return BadRequest();
             }
@@ -66,7 +66,7 @@ namespace Banq.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!SchoolExists(id))
+                if (!SchoolExists(code))
                 {
                     return NotFound();
                 }
@@ -104,9 +104,9 @@ namespace Banq.Controllers
 
         // DELETE: api/School/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSchool(string id)
+        public async Task<IActionResult> DeleteSchool(string code)
         {
-            var school = await _context.Schools.FindAsync(id);
+            var school = await _context.Schools.FindAsync(code);
             if (school == null)
             {
                 return NotFound();
@@ -118,9 +118,9 @@ namespace Banq.Controllers
             return NoContent();
         }
 
-        private bool SchoolExists(string id)
+        private bool SchoolExists(string code)
         {
-            return _context.Schools.Any(e => e.Code == id);
+            return _context.Schools.Any(e => e.Code == code);
         }
     }
 }

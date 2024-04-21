@@ -35,14 +35,14 @@ namespace Banq.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<QuestionViewModel>>> GetQuestions()
         {
-            return await _context.Questions.Select(x => x.ToQuestionViewModel()).ToListAsync();
+            return await _context.Questions.Include(x=>x.QuestionSet).Select(x => x.ToQuestionViewModel()).ToListAsync();
         }
 
         // GET: api/Questions/5
         [HttpGet("{id}")]
         public async Task<ActionResult<QuestionViewModel>> GetQuestion(ulong id)
         {
-            var Question = await _context.Questions.Where(x => x.Id == id).FirstAsync();
+            var Question = await _context.Questions.Include(x => x.QuestionSet).Where(x => x.Id == id).FirstAsync();
 
             if (Question == null)
             {

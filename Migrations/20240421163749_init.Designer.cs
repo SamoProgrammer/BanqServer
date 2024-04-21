@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Banq.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240321084814_init")]
+    [Migration("20240421163749_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -259,9 +259,9 @@ namespace Banq.Migrations
 
             modelBuilder.Entity("Banq.Database.Entities.Question", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<ulong>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint unsigned");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -308,6 +308,10 @@ namespace Banq.Migrations
                     b.Property<int>("Level")
                         .HasColumnType("int");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("ServerTime")
                         .HasColumnType("datetime(6)");
 
@@ -351,8 +355,8 @@ namespace Banq.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<Guid?>("PictureGuid")
-                        .HasColumnType("char(36)");
+                    b.Property<string>("PictureURL")
+                        .HasColumnType("longtext");
 
                     b.HasKey("Code");
 

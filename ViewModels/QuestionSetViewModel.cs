@@ -16,5 +16,8 @@ public class QuestionSetViewModel
 	public Field Field { get; set; }
 	public Grade Grade { get; set; }
 	public ApplicationUser Author { get; set; }
+	public Status Status { get; set; }
+	public string Name { get; set; }
+
 
 }

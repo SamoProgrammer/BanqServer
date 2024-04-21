@@ -22,5 +22,8 @@ public class QuestionSetDTO
 
 	[Required]
 	public Grade Grade { get; set; }
+	[Required]
+	public string Name { get; set; }
+
 
 }

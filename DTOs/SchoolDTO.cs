@@ -15,5 +15,5 @@ public class SchoolDTO {
 
 	public CourseLevel CourseLevel { get; set; }
 
-	public Guid? PictureGuid { get; set; }
+	public string? PictureURL { get; set; }
 }
