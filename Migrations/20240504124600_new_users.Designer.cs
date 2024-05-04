@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Banq.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240421163749_init")]
-    partial class init
+    [Migration("20240504124600_new_users")]
+    partial class new_users
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -219,6 +219,42 @@ namespace Banq.Migrations
                     b.ToTable("Lessons");
                 });
 
+            modelBuilder.Entity("Banq.Database.Entities.Manager", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<string>("Biography")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Family")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("PersonnelCode")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("varchar(8)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Managers");
+                });
+
             modelBuilder.Entity("Banq.Database.Entities.Office", b =>
                 {
                     b.Property<string>("Code")
@@ -361,6 +397,45 @@ namespace Banq.Migrations
                     b.HasKey("Code");
 
                     b.ToTable("Schools");
+                });
+
+            modelBuilder.Entity("Banq.Database.Entities.Teacher", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<string>("Biography")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Family")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("PersonnelCode")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("varchar(8)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<bool>("WantsToCheckOtherQuestions")
+                        .HasColumnType("tinyint(1)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Teachers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -511,6 +586,17 @@ namespace Banq.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Banq.Database.Entities.Manager", b =>
+                {
+                    b.HasOne("Banq.Authentication.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Banq.Database.Entities.Question", b =>
                 {
                     b.HasOne("Banq.Database.Entities.QuestionSet", "QuestionSet")
@@ -547,6 +633,17 @@ namespace Banq.Migrations
                     b.Navigation("Field");
 
                     b.Navigation("Lesson");
+                });
+
+            modelBuilder.Entity("Banq.Database.Entities.Teacher", b =>
+                {
+                    b.HasOne("Banq.Authentication.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

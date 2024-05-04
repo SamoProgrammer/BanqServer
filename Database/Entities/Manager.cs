@@ -8,6 +8,8 @@ namespace Banq.Database.Entities;
 // [PrimaryKey(nameof(PersonnelCode))]
 public class Manager
 {
+	public ulong Id { get; set; }
+
 	[Required]
 	[MinLength(Validation.User.PersonnelCodeLength)]
 	[MaxLength(Validation.User.PersonnelCodeLength)]

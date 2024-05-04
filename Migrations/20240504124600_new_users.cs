@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Banq.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class new_users : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -338,6 +338,65 @@ namespace Banq.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Managers",
+                columns: table => new
+                {
+                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    PersonnelCode = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Family = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Biography = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Managers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Managers_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Teachers",
+                columns: table => new
+                {
+                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    PersonnelCode = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Name = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Family = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Biography = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    WantsToCheckOtherQuestions = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Teachers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Teachers_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Classes",
                 columns: table => new
                 {
@@ -481,6 +540,11 @@ namespace Banq.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Managers_UserId",
+                table: "Managers",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_QuestionSets_AuthorId",
                 table: "QuestionSets",
                 column: "AuthorId");
@@ -499,6 +563,11 @@ namespace Banq.Migrations
                 name: "IX_Questions_QuestionSetId",
                 table: "Questions",
                 column: "QuestionSetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Teachers_UserId",
+                table: "Teachers",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -532,6 +601,9 @@ namespace Banq.Migrations
                 name: "FieldsOfTeach");
 
             migrationBuilder.DropTable(
+                name: "Managers");
+
+            migrationBuilder.DropTable(
                 name: "Offices");
 
             migrationBuilder.DropTable(
@@ -542,6 +614,9 @@ namespace Banq.Migrations
 
             migrationBuilder.DropTable(
                 name: "Schools");
+
+            migrationBuilder.DropTable(
+                name: "Teachers");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
