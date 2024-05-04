@@ -1,10 +1,12 @@
 ﻿using Banq.Authentication;
 using Banq.Authentication.Models;
+using Banq.Database;
 using Banq.Database.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -19,13 +21,15 @@ namespace Banq.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
+        private readonly DatabaseContext _context;
 
 
-        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, DatabaseContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
+            _context = context;
 
         }
         [HttpPost]
@@ -58,7 +62,7 @@ namespace Banq.Controllers
                 switch (userRole)
                 {
                     case UserRoles.Teacher:
-                        Teacher teacher = (Teacher)user;
+                        Teacher teacher = await _context.Teachers.Include(x => x.User).Where(x => x.User.UserName == user.UserName).FirstAsync();
                         return Ok(new
                         {
                             token = new JwtSecurityTokenHandler().WriteToken(token),
@@ -70,7 +74,7 @@ namespace Banq.Controllers
                             family = teacher.Family
                         });
                     case UserRoles.Manager:
-                        Manager manager = (Manager)user;
+                        Manager manager = await _context.Managers.Include(x => x.User).Where(x => x.User.UserName == user.UserName).FirstAsync();
                         return Ok(new
                         {
                             token = new JwtSecurityTokenHandler().WriteToken(token),
@@ -114,17 +118,13 @@ namespace Banq.Controllers
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
-            Manager user = new Manager()
+            var userResult = await _userManager.CreateAsync(new ApplicationUser
             {
-                Biography = model.Biography,
                 PhoneNumber = model.PhoneNumber,
-                Name = model.Name,
-                Family = model.Family,
-                UserName = model.Username,
-                PersonnelCode = model.PersonnelCode
-            };
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
+                UserName = model.Username
+            }, model.Password);
+
+            if (!userResult.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
             if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
                 await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
@@ -135,10 +135,24 @@ namespace Banq.Controllers
             if (!await _roleManager.RoleExistsAsync(UserRoles.Supervisor))
                 await _roleManager.CreateAsync(new IdentityRole(UserRoles.Supervisor));
 
+            var user = await _userManager.FindByNameAsync(model.Username);
+
             if (await _roleManager.RoleExistsAsync(UserRoles.Manager))
             {
                 await _userManager.AddToRoleAsync(user, UserRoles.Manager);
             }
+
+            Manager manager = new Manager()
+            {
+                Biography = model.Biography,
+                User = user,
+                Name = model.Name,
+                Family = model.Family,
+                PersonnelCode = model.PersonnelCode
+            };
+
+            await _context.Managers.AddAsync(manager);
+            await _context.SaveChangesAsync();
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
 
@@ -150,19 +164,13 @@ namespace Banq.Controllers
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
-            Teacher user = new Teacher()
+            var userResult = await _userManager.CreateAsync(new ApplicationUser
             {
-                Biography = model.Biography,
                 PhoneNumber = model.PhoneNumber,
-                Name = model.Name,
-                Family = model.Family,
-                UserName = model.Username,
-                PersonnelCode = model.PersonnelCode,
-                WantsToCheckOtherQuestions = model.WantsToCheckOtherQuestions
-            };
+                UserName = model.Username
+            }, model.Password);
 
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
+            if (!userResult.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
             if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
                 await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
@@ -173,10 +181,22 @@ namespace Banq.Controllers
             if (!await _roleManager.RoleExistsAsync(UserRoles.Supervisor))
                 await _roleManager.CreateAsync(new IdentityRole(UserRoles.Supervisor));
 
-            if (await _roleManager.RoleExistsAsync(UserRoles.Teacher))
+            var user = await _userManager.FindByNameAsync(model.Username);
+
+            await _userManager.AddToRoleAsync(user, UserRoles.Teacher);
+
+            Teacher teacher = new Teacher()
             {
-                await _userManager.AddToRoleAsync(user, UserRoles.Teacher);
-            }
+                Biography = model.Biography,
+                Name = model.Name,
+                User = user,
+                Family = model.Family,
+                PersonnelCode = model.PersonnelCode,
+                WantsToCheckOtherQuestions = model.WantsToCheckOtherQuestions
+            };
+
+            await _context.Teachers.AddAsync(teacher);
+            await _context.SaveChangesAsync();
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
 
@@ -266,7 +286,7 @@ namespace Banq.Controllers
             }
             return Ok(new
             {
-                username = username,
+                username,
                 roles = userRoles
             });
         }

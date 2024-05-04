@@ -24,14 +24,14 @@ public class DatabaseContext : IdentityDbContext<ApplicationUser>
 	public DbSet<Field> Fields { get; set; } = default!;
 	public DbSet<FieldOfTeach> FieldsOfTeach { get; set; } = default!;
 	public DbSet<Lesson> Lessons { get; set; } = default!;
-	// public DbSet<Manager> Managers { get; set; } = default!;
+	public DbSet<Manager> Managers { get; set; } = default!;
 	public DbSet<Office> Offices { get; set; } = default!;
 	public DbSet<Province> Provinces { get; set; } = default!;
 	public DbSet<QuestionSet> QuestionSets { get; set; } = default!;
 	public DbSet<Question> Questions { get; set; } = default!;
 	public DbSet<School> Schools { get; set; } = default!;
 	public DbSet<Comment> Comments { get; set; } = default!;
-	// public DbSet<Teacher> Teachers { get; set; } = default!;
+	public DbSet<Teacher> Teachers { get; set; } = default!;
 	#endregion
 
 	// #region Relations

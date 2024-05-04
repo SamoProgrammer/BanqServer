@@ -6,13 +6,16 @@ using Microsoft.EntityFrameworkCore;
 namespace Banq.Database.Entities;
 
 // [PrimaryKey(nameof(PersonnelCode))]
-public class Teacher : ApplicationUser
+public class Teacher
 {
 	[Required]
 	[MinLength(Validation.User.PersonnelCodeLength)]
 	[MaxLength(Validation.User.PersonnelCodeLength)]
 	[RegularExpression(Validation.Text.NumberRegex)]
 	public string PersonnelCode { get; set; } = default!;
+
+	[Required]
+	public virtual ApplicationUser User { get; set; }
 
 	// [Required]
 	// public string PasswordHash { get; set; } = default!;
