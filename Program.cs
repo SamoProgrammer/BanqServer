@@ -1,6 +1,7 @@
 using System.Text;
 using Banq.Authentication;
 using Banq.Database;
+using Banq.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -22,18 +23,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = "server=localhost;user=root;password=;database=sampad-banq";
-var serverVersion = new MySqlServerVersion(new Version(8, 2, 4));
+var serverVersion = new MariaDbServerVersion(new Version(11, 4, 2));
 
 
 builder.Services.AddDbContext<DatabaseContext>(
-    dbContextOptions => dbContextOptions
-        .UseMySql(connectionString, serverVersion)
+    options => options.UseMySql(builder.Configuration.GetConnectionString("Database"),serverVersion)
 );
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<DatabaseContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddStackExchangeRedisCache(options =>
+    options.Configuration = builder.Configuration.GetConnectionString("Cache"));
+
 
 // Adding Authentication  
 builder.Services.AddAuthentication(options =>
@@ -71,6 +74,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.ApplyMigrations();
 }
 
 

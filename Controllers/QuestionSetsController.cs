@@ -52,19 +52,42 @@ namespace Banq.Controllers
             return QuestionSet.ToQuestionSetViewModel();
         }
         [HttpGet("SeacrhQuestionSet")]
-        public async Task<IActionResult> SearchQuestionSets(string fieldName, string lessonName, Grade grade)
+        public async Task<IActionResult> SearchQuestionSets(int grade, string fieldName = "", string lessonName = "")
         {
-            if (!await _context.Fields.AnyAsync(x => x.Name == fieldName))
+            if (!string.IsNullOrEmpty(fieldName) && !await _context.Fields.AnyAsync(x => x.Name == fieldName))
             {
                 return BadRequest("Field not found!");
             }
 
-            if (!await _context.Lessons.AnyAsync(x => x.Name == lessonName))
+            if (!string.IsNullOrEmpty(lessonName) && !await _context.Lessons.AnyAsync(x => x.Name == lessonName))
             {
                 return BadRequest("Lesson not found!");
             }
 
-            return Ok(await _context.QuestionSets.Include(x => x.Lesson).Include(x => x.Field).Include(x => x.Author).Where(x => x.Lesson.Name == lessonName && x.Field.Name == fieldName && x.Grade == grade).Select(x => x.ToQuestionSetViewModel()).ToListAsync());
+            if (grade != 0 && (grade < 7 || grade > 12))
+            {
+                return BadRequest("Unavailable grade");
+            }
+
+            var query = _context.QuestionSets.Include(x => x.Lesson).Include(x => x.Field).Include(x => x.Author).AsQueryable();
+
+            if (!string.IsNullOrEmpty(fieldName))
+            {
+                query = query.Where(x => x.Field.Name == fieldName);
+            }
+
+            if (!string.IsNullOrEmpty(lessonName))
+            {
+                query = query.Where(x => x.Lesson.Name == lessonName);
+            }
+
+            if (grade != 0)
+            {
+                query = query.Where(x => x.Grade == (Grade)grade);
+            }
+
+            var filterResult = await query.Select(x => x.ToQuestionSetViewModel()).ToListAsync();
+            return Ok(filterResult);
         }
 
         // PUT: api/QuestionSets/5
@@ -134,7 +157,7 @@ namespace Banq.Controllers
             return CreatedAtAction("GetQuestionSet", new { id = QuestionSet.Id }, QuestionSet);
         }
 
-        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor}")]
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor},{UserRoles.Teacher}")]
         [HttpGet("ChangeQuestionSetStatus/{id}")]
         public async Task<IActionResult> ChangeQuestionSetStatus(ulong id, Status status)
         {

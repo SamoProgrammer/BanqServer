@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Banq.Database;
@@ -12,6 +7,7 @@ using Banq.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Banq.ViewModels;
 using Banq.DTOs;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Banq.Controllers
 {
@@ -22,11 +18,13 @@ namespace Banq.Controllers
     {
         private readonly DatabaseContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IDistributedCache _cache;
 
-        public CommentsController(DatabaseContext context, UserManager<ApplicationUser> userManager)
+        public CommentsController(DatabaseContext context, UserManager<ApplicationUser> userManager, IDistributedCache cache)
         {
             _context = context;
             _userManager = userManager;
+            _cache = cache;
         }
 
         // GET: api/Comments
@@ -40,7 +38,12 @@ namespace Banq.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CommentViewModel>> GetComment(ulong id)
         {
-            var comment = await _context.Comments.Include(x => x.User).Where(x => x.Id == id).FirstAsync();
+            var comment = await _cache.GetAsync($"comment-{id}", async token =>
+            {
+                var product = await _context.Comments.Include(x => x.User).Where(x => x.Id == id).FirstAsync();
+
+                return product;
+            });
 
             if (comment == null)
             {

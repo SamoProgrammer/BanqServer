@@ -14,7 +14,6 @@ using Banq.ViewModels;
 
 namespace Banq.Controllers
 {
-    [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor},{UserRoles.Teacher}")]
     [Route("api/[controller]")]
     [ApiController]
     public class LessonsController : ControllerBase
@@ -49,6 +48,7 @@ namespace Banq.Controllers
 
         // PUT: api/Lessons/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor},{UserRoles.Teacher}")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateLesson(string id, LessonDTO lessonDTO)
         {
@@ -77,15 +77,20 @@ namespace Banq.Controllers
 
         // POST: api/Lessons
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor},{UserRoles.Teacher}")]
         [HttpPost]
         public async Task<ActionResult<Lesson>> PostLesson(LessonDTO lessonDTO)
         {
+            if (lessonDTO.BookCode.Length > 6)
+            {
+                return BadRequest("Book Code is too long");
+            }
             var lesson = lessonDTO.ToLesson();
             if (LessonExists(lesson.Code))
             {
                 return Conflict();
             }
-            _context.Lessons.Add(lesson);
+            await _context.Lessons.AddAsync(lesson);
             try
             {
                 await _context.SaveChangesAsync();
@@ -99,6 +104,7 @@ namespace Banq.Controllers
         }
 
         // DELETE: api/Lessons/5
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor},{UserRoles.Teacher}")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLesson(string id)
         {

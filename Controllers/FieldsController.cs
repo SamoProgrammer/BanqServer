@@ -14,7 +14,6 @@ using Banq.Authentication;
 
 namespace Banq.Controllers
 {
-    [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor},{UserRoles.Teacher}")]
     [Route("api/[controller]")]
     [ApiController]
     public class FieldsController : ControllerBase
@@ -49,6 +48,7 @@ namespace Banq.Controllers
 
         // PUT: api/Fields/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor},{UserRoles.Teacher}")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutField(string id, FieldDTO fieldDTO)
         {
@@ -81,6 +81,7 @@ namespace Banq.Controllers
 
         // POST: api/Fields
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor},{UserRoles.Teacher}")]
         [HttpPost]
         public async Task<ActionResult<FieldViewModel>> PostField(FieldDTO field)
         {
@@ -105,6 +106,7 @@ namespace Banq.Controllers
         }
 
         // DELETE: api/Fields/5
+        [Authorize(Roles = $"{UserRoles.Admin},{UserRoles.Supervisor},{UserRoles.Teacher}")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteField(string id)
         {

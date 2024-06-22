@@ -21,14 +21,16 @@ namespace Banq.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _hostEnvironment;
         private readonly DatabaseContext _context;
 
 
-        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, DatabaseContext context)
+        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, IWebHostEnvironment hostEnvironment, DatabaseContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
+            _hostEnvironment = hostEnvironment;
             _context = context;
 
         }
@@ -109,6 +111,53 @@ namespace Banq.Controllers
             }
             return Unauthorized();
         }
+
+        [Authorize(Roles = $"{UserRoles.Manager},{UserRoles.Teacher}")]
+        [HttpPost("UploadUserImage")]
+        public async Task<IActionResult> UploadUserImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("No file was uploaded");
+            }
+
+
+            var fileExtension = Path.GetExtension(file.FileName).ToLower();
+
+            switch (fileExtension)
+            {
+                case ".png":
+                    break; ;
+                default:
+                    return BadRequest("Only png allowed");
+            }
+            string uploadsFolder = Path.Combine(_hostEnvironment.WebRootPath, "UserImages");
+
+            string filePath = Path.Combine(uploadsFolder, User.Claims.Where(x => x.Type == ClaimTypes.Name).First() + fileExtension);
+            using (Stream fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+            return Ok();
+        }
+
+        [Authorize(Roles = $"{UserRoles.Manager},{UserRoles.Teacher}")]
+        [HttpPost("GetUserImage")]
+        public async Task<IActionResult> GetUserImage()
+        {
+            string userImagesFolder = Path.Combine(_hostEnvironment.WebRootPath, "UserImages");
+            if (System.IO.File.Exists(userImagesFolder + "/" + User.Claims.Where(x => x.Type == ClaimTypes.Name).First() + ".png"))
+            {
+                var fileStream = System.IO.File.OpenRead(userImagesFolder + "/" + User.Claims.Where(x => x.Type == ClaimTypes.Name).First() + ".png");
+                return File(fileStream, "application/octet-stream", fileStream.Name, enableRangeProcessing: true);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+
 
         [HttpPost]
         [Route("Register-Manager")]
@@ -284,11 +333,48 @@ namespace Banq.Controllers
                     userRoles.Add(claim.Value);
                 }
             }
-            return Ok(new
+            switch (userRoles[0])
             {
-                username,
-                roles = userRoles
-            });
+                case UserRoles.Teacher:
+                    Teacher teacher = await _context.Teachers.Include(x => x.User).Where(x => x.User.UserName == user.UserName).FirstAsync();
+                    return Ok(new
+                    {
+                        userId = user.Id.ToString(),
+                        roles = userRoles,
+                        bio = teacher.Biography,
+                        name = teacher.Name,
+                        family = teacher.Family
+                    });
+                case UserRoles.Manager:
+                    Manager manager = await _context.Managers.Include(x => x.User).Where(x => x.User.UserName == user.UserName).FirstAsync();
+                    return Ok(new
+                    {
+
+                        userId = user.Id.ToString(),
+                        roles = userRoles,
+                        bio = manager.Biography,
+                        name = manager.Name,
+                        family = manager.Family
+                    });
+                case UserRoles.Admin:
+                    return Ok(new
+                    {
+
+                        userId = user.Id.ToString(),
+                        roles = userRoles,
+                        username = user.UserName
+                    });
+                case UserRoles.Supervisor:
+                    return Ok(new
+                    {
+
+                        userId = user.Id.ToString(),
+                        roles = userRoles,
+                        username = user.UserName
+                    });
+                default:
+                    return Ok();
+            }
         }
     }
 }
