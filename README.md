@@ -1,3 +1,6 @@
+![Banq Server](http://url/to/img.png)
+<em>image generated with AI</em>
+
 # BanqServer
 
 BanqServer is a backend API designed for managing question banks within an educational environment. It provides a scalable and secure way for schools to manage question storage, retrieval, and organization. This API is built with ASP.NET Core, following clean architecture principles, and includes support for Docker deployment.
