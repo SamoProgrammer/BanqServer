@@ -1,4 +1,4 @@
-![Banq Server](http://url/to/img.png)
+![Banq Server](https://github.com/SamoProgrammer/BanqServer/blob/main/BanqServer.webp)
 <em>image generated with AI</em>
 
 # BanqServer
